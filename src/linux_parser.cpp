@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
+#include <map>
+//#include <sstream>
 
 #include "linux_parser.h"
 
@@ -9,6 +11,8 @@ using std::stof;
 using std::string;
 using std::to_string;
 using std::vector;
+using std::istringstream;
+using std::map;
 
 // DONE: An example of how to read data from the filesystem
 string LinuxParser::OperatingSystem() {
@@ -35,13 +39,13 @@ string LinuxParser::OperatingSystem() {
 
 // DONE: An example of how to read data from the filesystem
 string LinuxParser::Kernel() {
-  string os, kernel;
+  string os, kernel, version;
   string line;
   std::ifstream stream(kProcDirectory + kVersionFilename);
   if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
-    linestream >> os >> kernel;
+    linestream >> os >> version >> kernel;
   }
   return kernel;
 }
@@ -67,10 +71,40 @@ vector<int> LinuxParser::Pids() {
 }
 
 // TODO: Read and return the system memory utilization
-float LinuxParser::MemoryUtilization() { return 0.0; }
+float LinuxParser::MemoryUtilization() {
+  string line;
+  string key;
+  float value;
+  map<string, float> MemoryMap;
+  std::ifstream filestream(kProcDirectory + kMeminfoFilename);
+  if (filestream.is_open()) {
+    while (getline(filestream, line)) {
+      std::istringstream line_stream(line);
+      while (line_stream >> key >> value) {
+        key.pop_back();
+        MemoryMap[key] = value;
+      }
+    }
+  }
+    float MemoryUsed = (MemoryMap["MemTotal"] - MemoryMap["MemAvailable"] )  /
+                     MemoryMap["MemTotal"];
+
+    return MemoryUsed;
+  }
 
 // TODO: Read and return the system uptime
-long LinuxParser::UpTime() { return 0; }
+long LinuxParser::UpTime() {
+  string line;
+  long uptime{}, idleTime{};
+  std::ifstream filestream(kProcDirectory + kUptimeFilename);
+  if(filestream.is_open()) {
+    getline(filestream, line);
+    std::istringstream line_stream(line);
+    line_stream >> uptime >> idleTime;
+  }
+
+  return uptime;
+}
 
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { return 0; }
