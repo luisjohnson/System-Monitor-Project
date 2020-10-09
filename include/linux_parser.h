@@ -48,20 +48,20 @@ long ActiveJiffies(int pid);
 long IdleJiffies();
 
 // Processes
-enum ProcessInfoData {
-  kUTime_ = 14,
+enum ProcessInfoStats {
+  kUTime_ = 13,
   kSTime_,
   kCUTime_,
   kCSTime_,
-  kStartTime_ = 22
+  kStartTime_ = 21
 };
 
-std::vector<std::string> ProcessInfo(int pid);
 std::string Command(int pid);
 long Ram(int pid);
 std::string Uid(int pid);
 std::string User(int pid);
 long int UpTime(int pid);
+long int StartTime(int pid);
 };  // namespace LinuxParser
 
 #endif

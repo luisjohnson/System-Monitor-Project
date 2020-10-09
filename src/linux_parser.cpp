@@ -111,15 +111,27 @@ long LinuxParser::Jiffies() {
   return long(total);
 }
 
-// TODO: Read and return the number of active jiffies for a PID
+// DONE: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::ActiveJiffies(int pid) {
+  string line;
+  string value;
+  long jiffies{0};
+  vector<string> fields{};
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatFilename);
   if (filestream.is_open()) {
-
+    getline(filestream, line);
+    std::istringstream lineStream(line);
+    while (lineStream >> value) {
+      fields.push_back(value);
+    }
+    jiffies = std::stol(fields[ProcessInfoStats::kUTime_]) +
+              std::stol(fields[ProcessInfoStats::kSTime_]) +
+              std::stol(fields[ProcessInfoStats::kCUTime_]) +
+              std::stol(fields[ProcessInfoStats::kCSTime_]);
   }
 
-  return 0;
+  return jiffies;
 }
 
 // DONE: Read and return the number of active jiffies for the system
@@ -283,4 +295,22 @@ long LinuxParser::UpTime(int pid) {
     }
   }
   return std::stol(clockTicks) / sysconf(_SC_CLK_TCK);
+}
+
+long int LinuxParser::StartTime(int pid) {
+  string line;
+  string value;
+  long startTime{0};
+  vector<string> fields{};
+  std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatFilename);
+  if (filestream.is_open()) {
+    getline(filestream, line);
+    std::istringstream lineStream(line);
+    while (lineStream >> value) {
+      fields.push_back(value);
+    }
+    startTime = std::stol(fields[ProcessInfoStats::kStartTime_]) /
+                sysconf(_SC_CLK_TCK);
+  }
+  return startTime;
 }

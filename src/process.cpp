@@ -14,8 +14,14 @@ using std::vector;
 // DONE: Return this process's ID
 int Process::Pid() { return pid_; }
 
-// TODO: Return this process's CPU utilization
-float Process::CpuUtilization() { return 0; }
+// DONE: Return this process's CPU utilization
+float Process::CpuUtilization() {
+  auto totalTime = (float)LinuxParser::ActiveJiffies(pid_) /
+      (float)sysconf(_SC_CLK_TCK);
+  auto seconds = LinuxParser::UpTime() - startTime_;
+  auto cpuUSage = totalTime/(float)seconds;
+  return cpuUSage;
+}
 
 // DONE: Return the command that generated this process
 string Process::Command() { return command_; }
@@ -32,7 +38,7 @@ string Process::User() { return user_; }
 // DONE: Return the age of this process (in seconds)
 long int Process::UpTime() { return LinuxParser::UpTime(pid_); }
 
-// TODO: Overload the "less than" comparison operator for Process objects
+// DONE: Overload the "less than" comparison operator for Process objects
 // REMOVE: [[maybe_unused]] once you define the function
 bool Process::operator<(Process const& a) const {
   return LinuxParser::Ram(pid_) > LinuxParser::Ram(a.pid_);
@@ -41,4 +47,5 @@ bool Process::operator<(Process const& a) const {
 Process::Process(int pid) : pid_(pid),
                             user_(LinuxParser::User(pid)),
                             command_(LinuxParser::Command(pid)),
-                            uid_(LinuxParser::Uid(pid)){}
+                            uid_(LinuxParser::Uid(pid)),
+                            startTime_(LinuxParser::StartTime(pid)){}

@@ -20,8 +20,10 @@ class Process {
   // TODO: Declare any necessary private members
  private:
   int pid_;
-  std::string user_, command_, uid_;
-
+  std::string user_;
+  std::string command_;
+  std::string uid_;
+  long startTime_;
 };
 
 #endif
