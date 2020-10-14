@@ -17,5 +17,5 @@ float Processor::Utilization() {
   return cpuPercentage;
 }
 
-Processor::Processor() : prevActiveJiffies_(0), prevIdleJiffies_(0),
+Processor::Processor() : prevIdleJiffies_(0),
                          prevTotalJiffies_(0) {}

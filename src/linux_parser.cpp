@@ -27,8 +27,8 @@ string LinuxParser::OperatingSystem() {
       std::replace(line.begin(), line.end(), ' ', '_');
       std::replace(line.begin(), line.end(), '=', ' ');
       std::replace(line.begin(), line.end(), '"', ' ');
-      std::istringstream linestream(line);
-      while (linestream >> key >> value) {
+      std::istringstream lineStream(line);
+      while (lineStream >> key >> value) {
         if (key == "PRETTY_NAME") {
           std::replace(value.begin(), value.end(), '_', ' ');
           return value;
@@ -46,8 +46,8 @@ string LinuxParser::Kernel() {
   std::ifstream stream(kProcDirectory + kVersionFilename);
   if (stream.is_open()) {
     std::getline(stream, line);
-    std::istringstream linestream(line);
-    linestream >> os >> version >> kernel;
+    std::istringstream lineStream(line);
+    lineStream >> os >> version >> kernel;
   }
   return kernel;
 }
@@ -206,7 +206,6 @@ int LinuxParser::RunningProcesses() {
   return total; }
 
 // DONE: Read and return the command associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Command(int pid) {
   std::string command;
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kCmdlineFilename);
@@ -217,7 +216,6 @@ string LinuxParser::Command(int pid) {
 }
 
 // DONE: Read and return the memory used by a process
-// REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::Ram(int pid) {
   std::string line;
   std::string key;
@@ -239,7 +237,6 @@ long LinuxParser::Ram(int pid) {
 }
 
 // DONE: Read and return the user ID associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Uid(int pid) {
   string line;
   string key;
@@ -260,7 +257,6 @@ string LinuxParser::Uid(int pid) {
 }
 
 // DONE: Read and return the user associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::User(int pid) {
   string line;
   string value;
@@ -282,7 +278,6 @@ string LinuxParser::User(int pid) {
 }
 
 // DONE: Read and return the uptime of a process
-// REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::UpTime(int pid) {
   string line;
   string clockTicks;
