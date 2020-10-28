@@ -16,6 +16,7 @@ namespace fs = std::filesystem;
 using std::regex;
 using std::regex_match;
 
+
 // DONE: An example of how to read data from the filesystem
 string LinuxParser::OperatingSystem() {
   string line;
@@ -41,7 +42,9 @@ string LinuxParser::OperatingSystem() {
 
 // DONE: An example of how to read data from the filesystem
 string LinuxParser::Kernel() {
-  string os, kernel, version;
+  string os;
+  string kernel;
+  string version;
   string line;
   std::ifstream stream(kProcDirectory + kVersionFilename);
   if (stream.is_open()) {
@@ -72,26 +75,27 @@ float LinuxParser::MemoryUtilization() {
   string line;
   string key;
   float value;
-  map<string, float> MemoryMap;
+  map<string, float> memoryMap;
   std::ifstream filestream(kProcDirectory + kMeminfoFilename);
   if (filestream.is_open()) {
     while (getline(filestream, line)) {
       std::istringstream lineStream(line);
       while (lineStream >> key >> value) {
         key.pop_back();
-        MemoryMap[key] = value;
+        memoryMap[key] = value;
       }
     }
   }
-    float MemoryUsed = (MemoryMap["MemTotal"] - MemoryMap["MemAvailable"] )  /
-                     MemoryMap["MemTotal"];
-    return MemoryUsed;
+    float memoryUsed = (memoryMap["MemTotal"] - memoryMap["MemAvailable"] )  /
+                     memoryMap["MemTotal"];
+    return memoryUsed;
   }
 
 // DONE: Read and return the system uptime
 long LinuxParser::UpTime() {
   string line;
-  long uptime{}, idleTime{};
+  long uptime{};
+  long idleTime{};
   std::ifstream filestream(kProcDirectory + kUptimeFilename);
   if(filestream.is_open()) {
     getline(filestream, line);
@@ -112,7 +116,6 @@ long LinuxParser::Jiffies() {
 }
 
 // DONE: Read and return the number of active jiffies for a PID
-// REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::ActiveJiffies(int pid) {
   string line;
   string value;
@@ -157,17 +160,17 @@ vector<float> LinuxParser::CpuUtilization() {
   string line;
   string cpu;
   float value;
-  vector<float> CpuStats;
+  vector<float> cpuStats;
   std::ifstream filestream(kProcDirectory + kStatFilename);
   if (filestream.is_open()) {
     getline(filestream, line);
     std::istringstream lineStream(line);
     lineStream >> cpu;
     while (lineStream >> value) {
-        CpuStats.push_back(value);
+      cpuStats.push_back(value);
     }
   }
-  return CpuStats;
+  return cpuStats;
 }
 
 // DONE: Read and return the total number of processes
@@ -208,7 +211,8 @@ int LinuxParser::RunningProcesses() {
 // DONE: Read and return the command associated with a process
 string LinuxParser::Command(int pid) {
   std::string command;
-  std::ifstream filestream(kProcDirectory + std::to_string(pid) + kCmdlineFilename);
+  std::ifstream filestream(kProcDirectory + std::to_string(pid) +
+                           kCmdlineFilename);
   if (filestream.is_open()) {
     getline(filestream, command);
   }
@@ -227,13 +231,14 @@ long LinuxParser::Ram(int pid) {
       std::istringstream lineStream(line);
       while (lineStream >> key >> value) {
         key.pop_back();
-        if (key == "VmSize") {
+        //VmSize replaced by VmData per reviewer suggestion
+        if (key == "VmData") {
           return value / 1000;
         }
       }
     }
   }
-  return 0;
+  return NULL;
 }
 
 // DONE: Read and return the user ID associated with a process
@@ -289,7 +294,7 @@ long LinuxParser::UpTime(int pid) {
       lineStream >> clockTicks;
     }
   }
-  return std::stol(clockTicks) / sysconf(_SC_CLK_TCK);
+  return UpTime() - std::stol(clockTicks) / sysconf(_SC_CLK_TCK);
 }
 
 long int LinuxParser::StartTime(int pid) {
@@ -297,7 +302,8 @@ long int LinuxParser::StartTime(int pid) {
   string value;
   long startTime{0};
   vector<string> fields{};
-  std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatFilename);
+  std::ifstream filestream(kProcDirectory + std::to_string(pid) +
+                           kStatFilename);
   if (filestream.is_open()) {
     getline(filestream, line);
     std::istringstream lineStream(line);

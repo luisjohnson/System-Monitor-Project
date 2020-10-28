@@ -26,5 +26,5 @@ string Format::ElapsedTime(long seconds) {
   if (minutes < 10) minutesStr = "0" + minutesStr;
   if (seconds < 10) secondsStr = "0" + secondsStr;
 
-  return hoursStr + ":" + minutesStr + ":" +secondsStr;
+  return hoursStr + ":"  + minutesStr + ":" +secondsStr;
 }
