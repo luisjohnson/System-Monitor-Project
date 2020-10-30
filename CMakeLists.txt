@@ -10,6 +10,6 @@ file(GLOB SOURCES "src/*.cpp")
 add_executable(monitor ${SOURCES})
 
 set_property(TARGET monitor PROPERTY CXX_STANDARD 17)
-target_link_libraries(monitor ${CURSES_LIBRARIES})
-# TODO: Run -Werror in CI.
-target_compile_options(monitor PRIVATE -Wall -Wextra)
+target_link_libraries(monitor ${CURSES_LIBRARIES} stdc++fs)
+# DONE: Run -Werror in CI.
+target_compile_options(monitor PRIVATE -Wall -Wextra -Werror)

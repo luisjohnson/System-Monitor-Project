@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <filesystem>
+#include <experimental/filesystem>
 #include <unistd.h>
 
 #include "linux_parser.h"
@@ -12,7 +12,7 @@ using std::to_string;
 using std::vector;
 using std::istringstream;
 using std::map;
-namespace fs = std::filesystem;
+namespace fs = std::experimental::filesystem;
 using std::regex;
 using std::regex_match;
 
@@ -60,7 +60,7 @@ vector<int> LinuxParser::Pids() {
   std::vector<int> pids;
   fs::path path{kProcDirectory};
   for(const fs::directory_entry &entry: fs::directory_iterator{path}) {
-    if (entry.is_directory() ) {
+    if (entry.status().type() == fs::file_type::directory) {
       std::string dirname{entry.path().filename()};
       if (regex_match(dirname, regex("[1-9]\\d*|0\\d+"))) {
         pids.push_back(std::stoi(dirname));
